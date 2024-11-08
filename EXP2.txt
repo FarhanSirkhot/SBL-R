@@ -1,0 +1,13 @@
+median, mode, and standard deviation
+calc_stats <- function(x) {
+mean_val <- mean(x)
+median_val <- median(x)
+mode_val <- as.numeric(names(sort(table(x), decreasing = TRUE))[1])
+sd_val <- sd(x)
+result_vector <- c(Mean = mean_val, Median = median_val, Mode = mode_val, SD = sd_val)
+return(result_vector)
+}
+data <- c(10, 20, 30, 40, 50, 50, 60, 70)
+stats_result <- calc_stats(data)
+print("Calculated statistics (Mean, Median, Mode, SD):")
+print(stats_result)
