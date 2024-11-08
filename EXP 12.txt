@@ -1,0 +1,10 @@
+library(caret)
+library(nnet) # For feedforward neural network
+library(neuralnet) # Alternatively, for another neural network implementation
+data <- read.csv("C:/Users/farha/OneDrive/Desktop/R practs/Telco-Customer-Churn.csv")
+data$TotalCharges <- as.numeric(as.character(data$TotalCharges)) # Convert TotalCharges to numeric
+data <- na.omit(data) # Remove missing values
+dummy <- dummyVars(" ~ .", data = data) # Create the dummy variables model
+data_transformed <- predict(dummy, newdata = data) # Apply the dummy model to create dummy variables
+data_transformed <- as.data.frame(data_transformed) # Convert the result to a data frame
+str(data_transformed)
