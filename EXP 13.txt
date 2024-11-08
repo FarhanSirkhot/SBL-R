@@ -1,0 +1,40 @@
+data <- read.csv("C:\\Users\\farha\\OneDrive\\Desktop\\R practs\\archive\\WA_Fn-UseC_-Telco-Customer-Churn.csv")
+str(data)
+data <- data %>%
+mutate(Churn = ifelse(Churn == "Yes", 1, 0)) %>% # Convert target to binary
+na.omit() # Remove missing values
+data$gender <- as.factor(data$gender)
+data$Partner <- as.factor(data$Partner)
+data$Dependents <- as.factor(data$Dependents)
+data$PhoneService <- as.factor(data$PhoneService)
+data$MultipleLines <- as.factor(data$MultipleLines)
+set.seed(123)
+index <- createDataPartition(data$Churn, p = 0.7, list = FALSE)
+train <- data[index, ]
+test <- data[-index, ]
+nn_model <- neuralnet(Churn ~ tenure + MonthlyCharges + TotalCharges, data = train, linear.output = FALSE)
+nn_predictions <- compute(nn_model, test[, c("tenure", "MonthlyCharges", "TotalCharges")])$net.result
+nn_predicted <- ifelse(nn_predictions > 0.5, 1, 0)
+nn_cm <- confusionMatrix(as.factor(nn_predicted), as.factor(test$Churn))
+print(nn_cm)
+lr_model <- glm(Churn ~ tenure + MonthlyCharges + TotalCharges, data = train, family = binomial)
+lr_predictions <- predict(lr_model, test, type = "response")
+lr_predicted <- ifelse(lr_predictions > 0.5, 1, 0)
+tree_model <- rpart(Churn ~ tenure + MonthlyCharges + TotalCharges, data = train, method = "class")
+tree_predictions <- predict(tree_model, test, type = "class")
+lr_cm <- confusionMatrix(as.factor(lr_predicted), as.factor(test$Churn))
+tree_cm <- confusionMatrix(tree_predictions, as.factor(test$Churn))
+print(lr_cm)
+print(tree_cm)
+explainer_nn <- Predictor$new(nn_model, data = test[, c("tenure", "MonthlyCharges", "TotalCharges")], y = test$Churn)
+shap_values_nn <- shapviz(explainer_nn)
+plot(shap_values_nn) # SHAP feature importance plot
+explainer_lr <- Predictor$new(lr_model, data = test[, c("tenure", "MonthlyCharges", "TotalCharges")], y = test$Churn)
+shap_values_lr <- shapviz(explainer_lr)
+plot(shap_values_lr)
+explainer_lime <- lime(train[, c("tenure", "MonthlyCharges", "TotalCharges")], nn_model)
+explanation <- explain(test[1:5, c("tenure", "MonthlyCharges", "TotalCharges")], explainer_lime, n_labels = 1, n_features = 3)
+plot_features(explanation)
+print(paste("Neural Network Accuracy:", nn_cm$overall["Accuracy"]))
+print(paste("Logistic Regression Accuracy:", lr_cm$overall["Accuracy"]))
+print(paste("Decision Tree Accuracy:", tree_cm$overall["Accuracy"]))
