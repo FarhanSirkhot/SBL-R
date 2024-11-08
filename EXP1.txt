@@ -1,0 +1,18 @@
+num1 <- 10
+num2 <- 25.5
+print(paste("Numeric variable 1:", num1))
+print(paste("Numeric variable 2:", num2))
+str1 <- "Hello"
+str2 <- "World"
+print(paste("String 1:", str1))
+print(paste("String 2:", str2))
+colors <- factor(c("red", "green", "blue", "red", "green"))
+print("Factor variable (colors):")
+print(colors)
+print("Levels of factor (colors):")
+print(levels(colors))
+sum_result <- num1 + num2
+print(paste("Sum of num1 and num2:", sum_result))
+concat_str <- paste(str1, str2)
+print(paste("Concatenated string:", concat_str))
+print(paste("Number of levels in 'colors' factor:", length(levels(colors))))
