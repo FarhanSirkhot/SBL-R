@@ -1,0 +1,16 @@
+install.packages("survminer")
+library(dplyr)
+library(survival)
+library(survminer)
+sales_data <- read.csv("C:/Users/farha/OneDrive/Desktop/R practs/archive/Walmart_Sales.csv")
+sales_data$Date <- as.Date(sales_data$Date, format="%Y-%m-%d")
+sales_data <- sales_data %>%
+arrange(Date) %>%
+mutate(event = ifelse(Weekly_Sales == 0, 1, 0),
+time = as.numeric(difftime(Date, min(Date), units = "days")))
+surv_object <- Surv(time = sales_data$time, event = sales_data$event)
+km_fit <- survfit(surv_object ~ 1)
+ggsurvplot(km_fit, data = sales_data,
+title = "Kaplan-Meier Survival Curve for Product Sales",
+xlab = "Days", ylab = "Survival Probability",
+conf.int = TRUE)
