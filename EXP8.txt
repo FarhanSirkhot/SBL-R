@@ -1,0 +1,19 @@
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(pROC)
+data <- read.csv('C:/Users/farha/OneDrive/Desktop/R practs/archive/online_retail_customer_churn.csv')
+data$Gender <- as.factor(data$Gender)
+data$Promotion_Response <- as.factor(data$Promotion_Response)
+set.seed(123)
+trainIndex <- createDataPartition(data$Target_Churn, p = 0.8, list = FALSE)
+trainData <- data[trainIndex, ]
+testData <- data[-trainIndex, ]
+fit <- rpart(Target_Churn ~ Total_Spend + Num_of_Purchases + Average_Transaction_Amount,
+data = trainData, method = 'class')
+rpart.plot(fit)
+predictions <- predict(fit, testData, type = "class")
+confusionMatrix(predictions, testData$Target_Churn)
+probabilities <- predict(fit, testData, type = "prob")[,2]
+roc_curve <- roc(testData$Target_Churn, probabilities)
+plot(roc_curve, col = "blue", main = "ROC Curve")
