@@ -1,0 +1,19 @@
+library(dplyr)
+library(tidyr) # Load tidyr for data cleaning functions
+sales_data <- read.csv("C:/Users/farha/OneDrive/Desktop/R practs/archive/Walmart_Sales.csv")
+sales_data_cleaned <- sales_data %>%
+distinct() # This will remove duplicate rows
+sales_data_cleaned <- sales_data_cleaned %>%
+drop_na() # This will drop any rows with NA values
+cat("Number of rows before cleaning:", nrow(sales_data), "\n")
+cat("Number of rows after cleaning:", nrow(sales_data_cleaned), "\n")
+summary_stats <- sales_data_cleaned %>%
+summarise(
+Mean_Sales_Amount = mean(Sales.Amount, na.rm = TRUE),
+Median_Sales_Amount = median(Sales.Amount, na.rm = TRUE),
+SD_Sales_Amount = sd(Sales.Amount, na.rm = TRUE),
+Total_Sales_Amount = sum(Sales.Amount, na.rm = TRUE),
+Total_Quantity_Sold = sum(Quantity, na.rm = TRUE)
+)
+print("Summary Statistics:")
+print(summary_stats)

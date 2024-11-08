@@ -1,0 +1,21 @@
+library(dplyr)
+library(ggplot2)
+sales_data <- read.csv("C:/Users/farha/OneDrive/Desktop/R practs/archive/Walmart_Sales.csv")
+print("Column names in the dataset:")
+print(colnames(sales_data))
+sales_data_cleaned <- sales_data %>%
+distinct() %>% # Remove duplicates
+drop_na() # Remove rows with missing values
+ggplot(data = sales_data_cleaned, aes(x = reorder(Product.Name, -Sales.Amount), y = Sales.Amount)) +
+geom_bar(stat = "identity", fill = "steelblue") +
+labs(title = "Total Sales Amount by Product", x = "Product Name", y = "Total Sales Amount") +
+theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels for better readability
+ggplot(data = sales_data_cleaned, aes(x = Sales.Amount)) +
+geom_histogram(binwidth = 500, fill = "lightblue", color = "black") +
+labs(title = "Distribution of Sales Amounts", x = "Sales Amount", y = "Frequency") +
+theme_minimal()
+ggplot(data = sales_data_cleaned, aes(x = Quantity, y = Sales.Amount)) +
+geom_point(color = "orange", alpha = 0.6) +
+labs(title = "Sales Amount vs. Quantity Sold", x = "Quantity Sold", y = "Sales Amount") +
+theme_minimal() +
+geom_smooth(method = "lm", color = "blue", se = FALSE) # Add a linear regression line
