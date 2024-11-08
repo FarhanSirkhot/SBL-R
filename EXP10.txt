@@ -1,0 +1,6 @@
+train_data$label <- as.factor(train_data$label)
+test_data$label <- as.factor(test_data$label)
+nb_model <- naiveBayes(label ~ ., data = train_data)
+predictions <- predict(nb_model, test_data)
+predictions <- factor(predictions, levels = levels(test_data$label))
+confusionMatrix(predictions, test_data$label)
