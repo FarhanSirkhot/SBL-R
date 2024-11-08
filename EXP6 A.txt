@@ -1,0 +1,29 @@
+library(dplyr)
+library(ggplot2)
+library(tsibble)
+library(fable)
+library(fabletools)
+library(slider) # Load the slider package
+sales_data <- read.csv("C:/Users/farha/OneDrive/Desktop/R practs/archive/Walmart_Sales.csv")
+print("Column names in the dataset:")
+print(colnames(sales_data))
+sales_data$Date <- as.Date(sales_data$Date, format="%Y-%m-%d")
+sales_tsibble <- sales_data %>%
+group_by(Date) %>% # Group by date
+summarise(Total_Sales = sum(Weekly_Sales, na.rm = TRUE)) %>% # Total sales per day
+as_tsibble(index = Date) # Convert to tsibble
+sales_tsibble <- sales_tsibble %>%
+fill_gaps(Total_Sales = 0) # Fill gaps with 0 sales, or use NA as needed
+sales_tsibble <- sales_tsibble %>%
+mutate(MA_Sales = slide_index(Total_Sales, Date, mean, .size = 7, .align = "right")) # 7-day moving average
+sales_model <- sales_tsibble %>%
+model(ETS(Total_Sales)) # Fit an ETS model
+sales_forecast <- sales_model %>%
+forecast(h = "30 days") # Forecast for 30 days ahead
+# b. Decompose the time series into its components
+decomposed <- sales_model %>%
+components()
+autoplot(decomposed) +
+labs(title = "Decomposition of Weekly Sales Data",
+x = "Date", y = "Sales") +
+theme_minimal()
